@@ -1,17 +1,34 @@
 import '../extensions/array';
 
-let getWindowsSizes = (containerSize, splitters) => {
+let getWindowsSizes = (containerSize, splitters, splitterSize) => {
   let windowsSizes = splitters.map((s, i) => {
     if (i === 0) {
       return s;
     } else {
-      return splitters[i] - splitters[i -1];
+      return splitters[i] - splitters[i -1] - splitterSize;
     }
   });
 
-  windowsSizes.push(containerSize - splitters.last());
+  var lastWindowSize = containerSize - splitters.last() - splitterSize;
+  windowsSizes.push(lastWindowSize);
 
   return windowsSizes;
 }
 
-export { getWindowsSizes };
+let ensureEnoughSpaceBetweenSplitters = (fixedA, moving, fixedB, space, splitterSize) => {
+  if (fixedA === 0) {
+    splitterSize = 0;
+  }
+
+  if (moving - space - splitterSize < fixedA) {
+    moving = fixedA + space + splitterSize;
+  }
+
+  if (moving + space + splitterSize > fixedB) {
+    moving = fixedB - space - splitterSize;
+  }
+
+  return moving;
+}
+
+export { getWindowsSizes, ensureEnoughSpaceBetweenSplitters };

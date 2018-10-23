@@ -10,6 +10,7 @@
 .container {
     position: relative;
     height: 100%;
+    width: 100%;
     display: flex;
     user-select: none;
 }
@@ -18,9 +19,8 @@
     flex-direction: column;
 }
 
-.container--vertical > .window {
-    border-top-width: 0;
-    border-bottom-width: 0;
+.container--horizontal {
+    flex-direction: row;
 }
 
 .window {
@@ -29,5 +29,5 @@
 
 .divider {
     background-color: #909090;
-    cursor: ns-resize;
+    cursor: grab;
 }

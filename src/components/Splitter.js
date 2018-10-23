@@ -5,7 +5,10 @@ class Splitter extends Component {
 		return (
 			<div 
 				className='divider'
-				style={{height: this.props.height}}
+				style={{
+					height: this.props.height || 'auto',
+					width: this.props.width || 'auto'
+				}}
 				onMouseDown={this.props.handleMouseDown}
 			>
 			</div>
