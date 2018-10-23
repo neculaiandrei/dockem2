@@ -7,6 +7,10 @@ import { getWindowsSizes, ensureEnoughSpaceBetweenSplitters } from '../utils/con
 
 const SPLITTER_SIZE = 5;
 const SPACE_BETWEEN = 40;
+const DIRECTION = {
+	horizontal: 0,
+	vertical: 1
+};
 
 class Container extends Component {
 	constructor(props) {
@@ -15,11 +19,13 @@ class Container extends Component {
 		this.state = {
 			height: 0,
 			width: 0,
-			direction: 0,
+			direction: DIRECTION.horizontal,
 			resizing: false,
 			activeSplitter: 1,
 			splitters: [200, 420, 640, 760]
 		};
+		this.isHorizontal = true;
+		this.isVertical = false;
 		
 		this.containerRef = React.createRef();
 		
@@ -37,31 +43,36 @@ class Container extends Component {
 			height,
 			width
 		});
+
+		this.containerSize = this.isVertical ? height: width;
 	}
 
 	changeDirection(event) {
 		if (event.key === 'h') {
 			this.setState({
-				direction: 0
+				direction: DIRECTION.horizontal
 			});
+			this.containerSize = this.state.width;
+			this.isHorizontal = true;
 		} else if (event.key === 'v') {
 			this.setState({
-				direction: 1
+				direction: DIRECTION.vertical
 			});
+			this.containerSize = this.state.height;
+			this.isVertical = true;
 		}
 	}
 
 	resize(event) {
-		const { height, width, direction, resizing, splitters, activeSplitter } = this.state;
+		const { resizing, splitters, activeSplitter } = this.state;
 
 		if (!resizing) {
 			return;
 		}
 
-		let mousePosition = direction ? event.clientY : event.clientX;
-		const containerSize = direction ? height : width;
+		let mousePosition = this.isVertical ? event.clientY : event.clientX;
 		const previousSplitter = activeSplitter ? splitters[activeSplitter - 1] : 0;
-		const nextSplitter = activeSplitter === splitters.length - 1 ? containerSize : splitters[activeSplitter + 1];
+		const nextSplitter = activeSplitter === splitters.length - 1 ? this.containerSize : splitters[activeSplitter + 1];
 				
 		mousePosition = ensureEnoughSpaceBetweenSplitters(previousSplitter, mousePosition, nextSplitter, SPACE_BETWEEN, SPLITTER_SIZE);
 
@@ -84,19 +95,19 @@ class Container extends Component {
 		this.setState({
 			resizing: false
 		});
-	}
-		 
+	}	 
 
 	render() {
+		const { resizing, splitters } = this.state;
+
 		const containerClass = classNames({
 			'container': true,
-			'container--vertical': this.state.direction,
-			'container--horizontal': !this.state.direction,
-			'container--resizing': this.state.resizing
+			'container--vertical': this.isVertical,
+			'container--horizontal': this.isHorizontal,
+			'container--resizing': resizing
 		});
 
-		const containerSize = this.state.direction ? this.state.height: this.state.width;
-		const windowsSizes = getWindowsSizes(containerSize, this.state.splitters, SPLITTER_SIZE);
+		const windowsSizes = getWindowsSizes(this.containerSize, splitters, SPLITTER_SIZE);
 
 		const content = 
 			windowsSizes
@@ -104,8 +115,8 @@ class Container extends Component {
 					let arr = [
 						<Window
 						key={`w_${i}`} 
-						height={this.state.direction ? s : null}
-						width={!this.state.direction ? s : null} 
+						height={this.isVertical ? s : null}
+						width={this.isHorizontal ? s : null} 
 					/>
 					];
 
@@ -113,8 +124,8 @@ class Container extends Component {
 						arr.push(
 							<Splitter
 								key={`S_${i}`}
-								height={this.state.direction ? SPLITTER_SIZE : null}
-								width={!this.state.direction ? SPLITTER_SIZE : null}
+								height={this.isVertical ? SPLITTER_SIZE : null}
+								width={this.isHorizontal ? SPLITTER_SIZE : null}
 								handleMouseDown={() => this.startResize(i)}
 							/>
 						);
