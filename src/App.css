@@ -1,0 +1,33 @@
+.whole {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #F9F9F9;
+}
+
+.container {
+    position: relative;
+    height: 100%;
+    display: flex;
+    user-select: none;
+}
+
+.container--vertical {
+    flex-direction: column;
+}
+
+.container--vertical > .window {
+    border-top-width: 0;
+    border-bottom-width: 0;
+}
+
+.window {
+    background: white;
+}
+
+.divider {
+    background-color: #909090;
+    cursor: ns-resize;
+}
